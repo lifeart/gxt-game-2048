@@ -33,6 +33,10 @@ body {
   min-width: 320px;
   min-height: 100vh;
   overflow: hidden;
+  -webkit-user-select: none;  
+  -moz-user-select: none;    
+  -ms-user-select: none;      
+  user-select: none;
 }
 
 h1 {
