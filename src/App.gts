@@ -371,6 +371,14 @@ export default class Game2048 extends Component {
     this.saveState();
   };
 
+  stateToSave: null | {
+    tiles: { value: number; x: number; y: number; id: number }[];
+    score: number;
+    maxScore: number;
+    gameOver: boolean;
+    tileId: number;
+  } = null;
+
   saveState() {
     const gameState = {
       tiles: this.tiles.map((tile) => ({
@@ -384,6 +392,16 @@ export default class Game2048 extends Component {
       gameOver: this.gameOver,
       tileId: this.tileId,
     };
+    this.stateToSave = gameState;
+    this.hideMerged();
+    clearTimeout(this.saveTimeout);
+    this.saveTimeout = setTimeout(()=> this.lazySave(), 10000); // 10s per save
+  }
+
+  saveTimeout = -1;
+  lazySave() {
+    clearTimeout(this.saveTimeout);
+    const gameState = this.stateToSave;
     localStorage.setItem('gameState', JSON.stringify(gameState));
     try {
       if (this.score === 0) {
@@ -396,7 +414,6 @@ export default class Game2048 extends Component {
     } catch (e) {
       // FINE
     }
-    this.hideMerged();
   }
 
   get showMaxScore() {
