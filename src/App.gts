@@ -181,7 +181,11 @@ export default class Game2048 extends Component {
     target.merged = true;
     this.updateTileClass(target);
     this.score += target.value;
-
+    try {
+      window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+    } catch (e) {
+      // FINE
+    }
     source.value = 0; // Mark source tile for removal
   }
 
