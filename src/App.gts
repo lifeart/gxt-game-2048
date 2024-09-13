@@ -36,6 +36,7 @@ export default class Game2048 extends Component {
     this.tileId = 0;
     this.addRandomTile();
     this.addRandomTile();
+    this.prepareTiles();
     this.saveState();
   }
 
