@@ -420,8 +420,8 @@ export default class Game2048 extends Component {
   };
 
   <template>
-    <div class='flex flex-col items-center justify-center min-h-screen'>
-      <h1 class='text-4xl font-bold mb-4'>2048 Game</h1>
+    <div class='flex flex-col items-center justify-start min-h-screen'>
+      <h1 class='text-4xl font-bold mb-4 mt-4'>2048 Game</h1>
       <div class='text-2xl mb-4'>Score: {{this.score}}</div>
       <div
         class='game-container relative'
@@ -469,17 +469,6 @@ export default class Game2048 extends Component {
         {{on 'click' this.resetGame}}
       >New Game</button>
     </div>
-    <style>
-      .game-container { position: relative; background-color: #bbada0;
-      border-radius: 8px; margin-bottom: 20px; margin-left: 10px; margin-right:
-      10px; } .tile { border-radius: 8px; transition: transform 0.2s ease-out,
-      top 0.2s, left 0.2s; box-shadow: 0px 0px 0px 1px; } .tile-new { animation:
-      pop 0.2s; } .tile-merged { animation: merge 0.2s; } .tile-empty {
-      background-color: #cdc1b4; position: absolute; border-radius: 8px; }
-      @keyframes pop { from { transform: scale(0.5); } to { transform: scale(1);
-      } } @keyframes merge { from { transform: scale(1); } to { transform:
-      scale(1.2); } }
-    </style>
   </template>
 
   position(index: number) {
