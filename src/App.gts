@@ -158,9 +158,7 @@ export default class Game2048 extends Component {
       });
     });
 
-    if (moved) {
-      this.tiles = this.tiles.filter((tile) => tile.value !== 0);
-    }
+    this.tiles = this.tiles.filter((tile) => tile.value !== 0);
 
     return moved;
   }
