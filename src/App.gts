@@ -410,7 +410,7 @@ export default class Game2048 extends Component {
     this.stateToSave = gameState;
     this.hideMerged();
     clearTimeout(this.saveTimeout);
-    this.saveTimeout = setTimeout(()=> this.lazySave(), 10000); // 10s per save
+    this.saveTimeout = setTimeout(()=> this.lazySave(), 3000); // 3s per save
   }
 
   saveTimeout = -1;
