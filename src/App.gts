@@ -27,6 +27,11 @@ export default class Game2048 extends Component {
     if (this.tiles.length === 0) {
       this.setupNewGame();
     }
+    try {
+      window.Telegram.WebApp.disableVerticalSwipes();
+    } catch(e) {
+      // EOL
+    }
   }
 
   setupNewGame() {
