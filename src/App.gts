@@ -281,6 +281,11 @@ export default class Game2048 extends Component {
 
   resetGame = () => {
     this.setupNewGame();
+    try {
+      window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+    } catch (e) {
+      // FINE
+    }
   };
 
   gridDisplaySize = Math.min(400, window.innerWidth);
@@ -351,6 +356,11 @@ export default class Game2048 extends Component {
       this.addRandomTile();
       if (!this.canMove()) {
         this.gameOver = true;
+        try {
+          window.Telegram.WebApp.HapticFeedback.notificationOccurred('error');
+        } catch (e) {
+          // FINE
+        }
       }
     }
     this.saveState();
