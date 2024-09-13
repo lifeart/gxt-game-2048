@@ -11,6 +11,17 @@ type Tile = {
   isNew: boolean;
 };
 
+
+type GameState = {
+  tiles: { value: number; x: number; y: number; id: number }[];
+  score: number;
+  maxScore: number;
+  gameOver: boolean;
+  tileId: number;
+};
+
+type Direction = 'up' | 'down' | 'left' | 'right';
+
 export default class Game2048 extends Component {
   @tracked tiles: Tile[] = [];
 
@@ -70,6 +81,13 @@ export default class Game2048 extends Component {
       y: randomCell.y,
       isNew: true,
     };
+    this.addReactiveProperties(tile);
+    this.updateTileClass(tile);
+    this.tiles.push(tile);
+    this.tiles = [...this.tiles];
+  }
+
+  addReactiveProperties(tile: Tile) {
     cellFor(tile, 'value');
     cellFor(tile, 'merged');
     cellFor(tile, 'className');
@@ -77,9 +95,6 @@ export default class Game2048 extends Component {
     cellFor(tile, 'x');
     cellFor(tile, 'y');
     cellFor(tile, 'isNew');
-    this.updateTileClass(tile);
-    this.tiles.push(tile);
-    this.tiles = [...this.tiles];
   }
 
   updateTileClass(tile: Tile) {
@@ -101,7 +116,7 @@ export default class Game2048 extends Component {
     const baseClass =
       'tile absolute flex items-center justify-center font-bold text-2xl';
     tile.className = `${baseClass} ${
-      valueClassMap[tile.value] || 'bg-gray-500 text-white'
+      valueClassMap[tile.value as keyof typeof valueClassMap] || 'bg-gray-500 text-white'
     }`;
   }
 
@@ -133,7 +148,7 @@ export default class Game2048 extends Component {
     this.saveState();
   };
 
-  move(direction: 'up' | 'down' | 'left' | 'right'): boolean {
+  move(direction: Direction): boolean {
     let moved = false;
     const vectors = this.getVector(direction);
     const traversals = this.buildTraversals(vectors);
@@ -201,7 +216,7 @@ export default class Game2048 extends Component {
   }
 
   buildTraversals(vector: { x: number; y: number }) {
-    const traversals = { x: [], y: [] };
+    const traversals: { x: number[], y: number[] } = { x: [], y: [] };
 
     for (let pos = 0; pos < this.gridSize; pos++) {
       traversals.x.push(pos);
@@ -236,7 +251,7 @@ export default class Game2048 extends Component {
     };
   }
 
-  getVector(direction: string) {
+  getVector(direction: Direction) {
     const map = {
       up: { x: -1, y: 0 },
       down: { x: 1, y: 0 },
@@ -268,7 +283,7 @@ export default class Game2048 extends Component {
         if (!tile) {
           return true;
         }
-        const directions = ['up', 'down', 'left', 'right'];
+        const directions: Direction[] = ['up', 'down', 'left', 'right'];
         for (let dir of directions) {
           const vector = this.getVector(dir);
           const nextPos = { x: x + vector.x, y: y + vector.y };
@@ -430,7 +445,7 @@ export default class Game2048 extends Component {
     }, 200);
   }
 
-  applyState(gameState) {
+  applyState(gameState: GameState) {
     this.tiles = gameState.tiles.map((tileData) => {
       const tile: Tile = {
         value: tileData.value,
@@ -442,13 +457,7 @@ export default class Game2048 extends Component {
         y: tileData.y,
         isNew: false,
       };
-      cellFor(tile, 'value');
-      cellFor(tile, 'merged');
-      cellFor(tile, 'className');
-      cellFor(tile, 'previousPosition');
-      cellFor(tile, 'x');
-      cellFor(tile, 'y');
-      cellFor(tile, 'isNew');
+      this.addReactiveProperties(tile);
       this.updateTileClass(tile);
       return tile;
     });
@@ -472,7 +481,7 @@ export default class Game2048 extends Component {
       window.Telegram.WebApp.CloudStorage.getItem(
         'game-2048-state',
         (err, raw) => {
-          if (!err) {
+          if (!err && raw) {
             const value = JSON.parse(raw);
             this.applyState(value);
           }
