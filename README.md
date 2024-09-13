@@ -1,8 +1,8 @@
-# GXT + TS + Vite
+# 2048 Game
 
-This template should help get you started developing with GXT and TypeScript in Vite.
+This is 2048 game implementation using glimmer-next and o1.
 
-[Demo](https://lifeart.github.io/template-gxt/)
+[Demo](https://lifeart.github.io/gxt-game-2048/)
 
 ## Recommended IDE Setup
 
