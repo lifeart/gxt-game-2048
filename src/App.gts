@@ -386,6 +386,9 @@ export default class Game2048 extends Component {
     };
     localStorage.setItem('gameState', JSON.stringify(gameState));
     try {
+      if (this.score === 0) {
+        return;
+      }
       window.Telegram.WebApp.CloudStorage.setItem(
         'game-2048-state',
         JSON.stringify(gameState),
