@@ -146,8 +146,11 @@ export default class Game2048 extends Component {
             this.mergeTiles(tile, nextTile);
             moved = true;
           } else {
-            this.moveTile(tile, positions.farthest);
-            if (positions.farthest.x !== x || positions.farthest.y !== y) {
+            if (
+              positions.farthest.x !== tile.x ||
+              positions.farthest.y !== tile.y
+            ) {
+              this.moveTile(tile, positions.farthest);
               moved = true;
             }
           }
