@@ -107,7 +107,7 @@ button:focus-visible {
 
 .game-container {
   position: relative;
-  background-color: #bbada0;
+  background-color: var(--tg-theme-bg-color, #bbada0);
   border-radius: 8px;
   margin-bottom: 20px;
   margin-left: 10px;
