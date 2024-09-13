@@ -16,6 +16,7 @@ export default class Game2048 extends Component {
 
   @tracked score = 0;
   @tracked gameOver = false;
+  @tracked maxScore = 0;
 
   gridSize = 4;
   tileId = 0;
@@ -29,7 +30,7 @@ export default class Game2048 extends Component {
     }
     try {
       window.Telegram.WebApp.disableVerticalSwipes();
-    } catch(e) {
+    } catch (e) {
       // EOL
     }
   }
@@ -181,6 +182,10 @@ export default class Game2048 extends Component {
     target.merged = true;
     this.updateTileClass(target);
     this.score += target.value;
+    if (this.score > this.maxScore) {
+      this.maxScore = this.score;
+    }
+
     try {
       window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
     } catch (e) {
@@ -375,11 +380,24 @@ export default class Game2048 extends Component {
         id: tile.id,
       })),
       score: this.score,
+      maxScore: this.maxScore,
       gameOver: this.gameOver,
       tileId: this.tileId,
     };
     localStorage.setItem('gameState', JSON.stringify(gameState));
+    try {
+      window.Telegram.WebApp.CloudStorage.setItem(
+        'game-2048-state',
+        JSON.stringify(gameState),
+      );
+    } catch (e) {
+      // FINE
+    }
     this.hideMerged();
+  }
+
+  get showMaxScore() {
+    return this.maxScore > this.score;
   }
 
   mergedTimeout: number | undefined = -1;
@@ -392,38 +410,56 @@ export default class Game2048 extends Component {
     }, 200);
   }
 
+  applyState(gameState) {
+    this.tiles = gameState.tiles.map((tileData) => {
+      const tile: Tile = {
+        value: tileData.value,
+        id: tileData.id,
+        merged: false,
+        className: '',
+        previousPosition: null,
+        x: tileData.x,
+        y: tileData.y,
+        isNew: false,
+      };
+      cellFor(tile, 'value');
+      cellFor(tile, 'merged');
+      cellFor(tile, 'className');
+      cellFor(tile, 'previousPosition');
+      cellFor(tile, 'x');
+      cellFor(tile, 'y');
+      cellFor(tile, 'isNew');
+      this.updateTileClass(tile);
+      return tile;
+    });
+    this.score = gameState.score;
+    this.maxScore = gameState.maxScore || gameState.score;
+    this.gameOver = gameState.gameOver;
+    this.tileId = gameState.tileId;
+  }
   loadState() {
     const savedState = localStorage.getItem('gameState');
     if (savedState) {
       try {
         const gameState = JSON.parse(savedState);
-        this.tiles = gameState.tiles.map((tileData) => {
-          const tile: Tile = {
-            value: tileData.value,
-            id: tileData.id,
-            merged: false,
-            className: '',
-            previousPosition: null,
-            x: tileData.x,
-            y: tileData.y,
-            isNew: false,
-          };
-          cellFor(tile, 'value');
-          cellFor(tile, 'merged');
-          cellFor(tile, 'className');
-          cellFor(tile, 'previousPosition');
-          cellFor(tile, 'x');
-          cellFor(tile, 'y');
-          cellFor(tile, 'isNew');
-          this.updateTileClass(tile);
-          return tile;
-        });
-        this.score = gameState.score;
-        this.gameOver = gameState.gameOver;
-        this.tileId = gameState.tileId;
+        this.applyState(gameState);
       } catch (e) {
         this.setupNewGame();
       }
+    }
+
+    try {
+      window.Telegram.WebApp.CloudStorage.getItem(
+        'game-2048-state',
+        (err, raw) => {
+          if (!err) {
+            const value = JSON.parse(raw);
+            this.applyState(value);
+          }
+        },
+      );
+    } catch (e) {
+      // FINE
     }
   }
 
@@ -443,7 +479,9 @@ export default class Game2048 extends Component {
   <template>
     <div class='flex flex-col items-center justify-start min-h-screen'>
       <h1 class='text-4xl font-bold mb-4 mt-4'>2048 Game</h1>
-      <div class='text-2xl mb-4'>Score: {{this.score}}</div>
+      <div class='text-2xl mb-4'>Score:
+        {{this.score}}{{#if this.showMaxScore}}, Max:
+          {{this.maxScore}}{{/if}}</div>
       <div
         class='game-container relative'
         style.width={{this.gridWidth}}
